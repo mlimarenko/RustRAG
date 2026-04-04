@@ -2,6 +2,9 @@
 /target
 **/target
 Cargo.lock
+!backend/Cargo.lock
+.cargo-target
+**/.cargo-target
 
 # Env
 .env
