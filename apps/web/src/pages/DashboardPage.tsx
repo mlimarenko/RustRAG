@@ -210,7 +210,7 @@ export default function DashboardPage() {
     );
   }
 
-  const { overview, graph, recentDocuments, attention } = data;
+  const { overview, graph, recentDocuments, attention, metrics } = data;
 
   const stats = {
     total: overview.totalDocuments,
@@ -221,7 +221,7 @@ export default function DashboardPage() {
     readable: overview.readyDocuments,
   };
 
-  const graphReadyPct = stats.total > 0 ? Math.round((stats.graphReady / stats.total) * 100) : 0;
+  const graphReadyPct = stats.total > 0 ? Math.min(100, Math.round((stats.graphReady / stats.total) * 100)) : 0;
 
   return (
     <div className="flex-1 flex flex-col overflow-auto ambient-bg">
@@ -280,6 +280,20 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {metrics.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {metrics.map(m => (
+              <div key={m.key} className="stat-tile">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className={`h-3.5 w-3.5 ${m.level === 'error' ? 'text-status-failed' : m.level === 'warning' ? 'text-status-warning' : 'text-muted-foreground'}`} />
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{m.label}</span>
+                </div>
+                <div className="text-lg font-bold tracking-tight tabular-nums mt-2">{m.value}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-4">
           {/* Status distribution */}
           <div className="workbench-surface p-5 lg:col-span-1">
@@ -289,10 +303,10 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-4">
               {[
-                { label: t('dashboard.graphReady'), count: stats.graphReady, pct: stats.total > 0 ? (stats.graphReady / stats.total) * 100 : 0, color: 'ready' },
-                { label: t('dashboard.graphSparse'), count: stats.graphSparse, pct: stats.total > 0 ? (stats.graphSparse / stats.total) * 100 : 0, color: 'sparse' },
-                { label: t('dashboard.processing'), count: stats.processing, pct: stats.total > 0 ? (stats.processing / stats.total) * 100 : 0, color: 'processing' },
-                { label: t('dashboard.failed'), count: stats.failed, pct: stats.total > 0 ? (stats.failed / stats.total) * 100 : 0, color: 'failed' },
+                { label: t('dashboard.graphReady'), count: stats.graphReady, pct: stats.total > 0 ? Math.min(100, (stats.graphReady / stats.total) * 100) : 0, color: 'ready' },
+                { label: t('dashboard.graphSparse'), count: stats.graphSparse, pct: stats.total > 0 ? Math.min(100, (stats.graphSparse / stats.total) * 100) : 0, color: 'sparse' },
+                { label: t('dashboard.processing'), count: stats.processing, pct: stats.total > 0 ? Math.min(100, (stats.processing / stats.total) * 100) : 0, color: 'processing' },
+                { label: t('dashboard.failed'), count: stats.failed, pct: stats.total > 0 ? Math.min(100, (stats.failed / stats.total) * 100) : 0, color: 'failed' },
               ].map(d => (
                 <div key={d.label}>
                   <div className="flex justify-between text-xs mb-2">
