@@ -1,7 +1,9 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
+ARG APP_VERSION
+ENV VITE_APP_VERSION=${APP_VERSION}
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 COPY . .
 RUN npx vite build
 
